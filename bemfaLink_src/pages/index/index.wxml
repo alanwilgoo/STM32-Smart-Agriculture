@@ -1,0 +1,70 @@
+<!-- pages/index/index.wxml —— 设备列表首页 -->
+<view class="page {{themeClass}}">
+  <view class="conn-bar {{connected ? 'on' : 'off'}}">
+    <text class="dot"></text>
+    <text class="conn-text">{{connected ? 'MQTT 已连接' : 'MQTT 未连接'}}</text>
+  </view>
+
+  <view wx:if="{{devices.length === 0}}" class="empty">
+    <view class="empty-icon">📡</view>
+    <view class="empty-title">还没有设备</view>
+    <view class="empty-sub">去「管理」页添加你的第一个设备</view>
+    <view class="empty-btn" bindtap="goManage">去添加</view>
+  </view>
+
+  <view class="grid">
+    <view
+      wx:for="{{devices}}"
+      wx:key="id"
+      class="card type-{{item.type}} {{item.online ? 'online' : 'offline'}} {{item.alert ? 'alert' : ''}}"
+      data-id="{{item.id}}"
+      bindtap="goDetail"
+    >
+      <view class="card-glow"></view>
+
+      <!-- 灯光卡片：截图风格 -->
+      <block wx:if="{{item.type === 'light'}}">
+        <view class="light-layout">
+          <view class="light-info">
+            <view class="light-title">{{item.displayName}}</view>
+            <view class="light-sub">{{item.name}} | {{item.state === 'on' ? '开' : '关'}}</view>
+            <view class="light-bulb-wrap">
+              <view class="light-bulb {{item.online ? 'breath' : ''}}">{{item.emoji}}</view>
+            </view>
+          </view>
+          <view
+            class="light-power {{item.state === 'on' ? 'on' : 'off'}} {{item.online ? '' : 'disabled'}}"
+            catchtap="onLightPower"
+            data-id="{{item.id}}"
+            data-next="{{item.state === 'on' ? 'off' : 'on'}}"
+          >
+            <view class="power-symbol">
+              <view class="power-stem"></view>
+              <view class="power-ring"></view>
+            </view>
+          </view>
+        </view>
+      </block>
+
+      <!-- 非灯光卡片：原有结构 -->
+      <block wx:else>
+        <view class="card-head">
+          <view class="icon icon-{{item.type}} {{item.online ? 'breath' : ''}}">
+            <text class="ico">{{item.emoji}}</text>
+          </view>
+          <view class="status-row">
+            <view class="status {{item.online ? 's-on' : 's-off'}}">{{item.online ? '在线' : '离线'}}</view>
+            <view class="alert-badge" wx:if="{{item.alert}}">告警</view>
+          </view>
+        </view>
+        <view class="card-name">{{item.displayName}}</view>
+        <view class="card-sub" wx:if="{{item.hasRemark}}">{{item.name}}</view>
+        <view class="card-type">{{item.typeText}}</view>
+        <view class="card-value">{{item.valueLabel}}</view>
+        <view class="card-time" wx:if="{{item.lastUpdate}}">更新 {{item.lastUpdate}}</view>
+      </block>
+    </view>
+  </view>
+
+  <view class="fab" bindtap="goManage">＋</view>
+</view>

@@ -1,0 +1,87 @@
+/* app.wxss —— 全局样式与主题变量（支持暗黑模式自动跟随系统） */
+
+page {
+  /* 白天主题变量 */
+  --bg: #f4f6fa;
+  --card-bg: #ffffff;
+  --card-bg-2: #f7f9fc;
+  --text: #1a1f29;
+  --text-2: #8a93a3;
+  --line: #eceff4;
+  --primary: #07c160;
+  --input-bg: rgba(140, 150, 170, 0.12);
+
+  --light-a: #ffc53d;
+  --light-b: #fa8c16;
+  --hum-a: #36cfc9;
+  --hum-b: #13c2c2;
+  --soil-a: #95de64;
+  --soil-b: #52c41a;
+  --co2-a: #b37feb;
+  --co2-b: #722ed1;
+  --photo-a: #ffc069;
+  --photo-b: #fa8c16;
+  --sensor-a: #85a5ff;
+  --sensor-b: #5677fc;
+
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", Helvetica, sans-serif;
+}
+
+/* 夜间主题覆盖：小程序真机 prefers-color-scheme 不一定可靠，
+   所以同时提供 .dark class，由 app.js 根据 wx.onThemeChange 动态挂载到 .page 上 */
+@media (prefers-color-scheme: dark) {
+  page,
+  .page.dark {
+    --bg: #0e1116;
+    --card-bg: #181c24;
+    --card-bg-2: #1f242e;
+    --text: #e8eaed;
+    --text-2: #8b93a1;
+    --line: #262c38;
+    --primary: #07c160;
+    --input-bg: rgba(255, 255, 255, 0.08);
+  }
+}
+.page.dark {
+  --bg: #0e1116;
+  --card-bg: #181c24;
+  --card-bg-2: #1f242e;
+  --text: #e8eaed;
+  --text-2: #8b93a1;
+  --line: #262c38;
+  --primary: #07c160;
+  --input-bg: rgba(255, 255, 255, 0.08);
+}
+
+/* 设备类型图标渐变（多页面复用） */
+.icon-light { background: linear-gradient(135deg, var(--light-a), var(--light-b)); }
+.icon-humiture { background: linear-gradient(135deg, var(--hum-a), var(--hum-b)); }
+.icon-soil { background: linear-gradient(135deg, var(--soil-a), var(--soil-b)); }
+.icon-co2 { background: linear-gradient(135deg, var(--co2-a), var(--co2-b)); }
+.icon-photores { background: linear-gradient(135deg, var(--photo-a), var(--photo-b)); }
+.icon-sensor { background: linear-gradient(135deg, var(--sensor-a), var(--sensor-b)); }
+
+/* 在线图标呼吸发光 */
+@keyframes iconBreath {
+  0% { box-shadow: 0 0 8rpx 0 rgba(255, 255, 255, 0.25); filter: drop-shadow(0 0 6rpx rgba(255, 255, 255, 0.5)); }
+  50% { box-shadow: 0 0 22rpx 4rpx rgba(255, 255, 255, 0.55); filter: drop-shadow(0 0 18rpx rgba(255, 255, 255, 0.95)); }
+  100% { box-shadow: 0 0 8rpx 0 rgba(255, 255, 255, 0.25); filter: drop-shadow(0 0 6rpx rgba(255, 255, 255, 0.5)); }
+}
+.breath { animation: iconBreath 3s ease-in-out infinite; }
+
+/* 数值浮动动画 */
+@keyframes valueFloat {
+  0% { transform: translateY(6rpx); opacity: 0.4; }
+  60% { transform: translateY(0); opacity: 1; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+.valueFloat { animation: valueFloat 0.6s ease-out; }
+
+/* 通用：页面容器 */
+.page {
+  min-height: 100vh;
+  box-sizing: border-box;
+  padding: 24rpx 24rpx calc(48rpx + env(safe-area-inset-bottom));
+}

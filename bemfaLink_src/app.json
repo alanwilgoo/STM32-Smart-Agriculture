@@ -1,0 +1,30 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/detail/detail",
+    "pages/manage/manage",
+    "pages/mine/mine"
+  ],
+  "window": {
+    "navigationBarBackgroundColor": "@navBgColor",
+    "navigationBarTextStyle": "@navTxtStyle",
+    "navigationBarTitleText": "巴法云",
+    "backgroundColor": "@bgColor",
+    "backgroundTextStyle": "@bgStyle"
+  },
+  "tabBar": {
+    "color": "@tabBarColor",
+    "selectedColor": "@tabBarSelectedColor",
+    "backgroundColor": "@tabBarBgColor",
+    "borderStyle": "@tabBarBorderStyle",
+    "list": [
+      { "pagePath": "pages/index/index", "text": "设备" },
+      { "pagePath": "pages/manage/manage", "text": "管理" },
+      { "pagePath": "pages/mine/mine", "text": "我的" }
+    ]
+  },
+  "darkmode": true,
+  "themeLocation": "theme.json",
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}

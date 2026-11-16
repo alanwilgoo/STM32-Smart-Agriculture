@@ -1,0 +1,122 @@
+<!-- pages/detail/detail.wxml —— 单设备详情 -->
+<view class="page {{themeClass}}" wx:if="{{device}}">
+  <view class="hero type-{{device.type}} {{device.state === 'on' ? 'is-on' : ''}}">
+    <view class="hero-glow hero-glow-a"></view>
+    <view class="hero-glow hero-glow-b"></view>
+    <view class="hero-icon icon-{{device.type}} {{device.online ? 'breath' : ''}}">
+      <text class="ico">{{device.emoji}}</text>
+    </view>
+    <view class="hero-name">{{device.displayName}}</view>
+    <view class="hero-status {{device.online ? 's-on' : 's-off'}}">{{device.online ? '设备在线' : '设备离线'}}</view>
+    <view class="hero-type">{{device.typeText}}</view>
+  </view>
+
+  <!-- 越限告警横幅 -->
+  <view class="alert-banner" wx:if="{{device.alert}}">
+    <text class="alert-ico">⚠️</text>
+    <text class="alert-text">{{device.alertText}}</text>
+  </view>
+
+  <!-- 灯：开关控制 -->
+  <block wx:if="{{device.type === 'light'}}">
+    <view class="light-panel" bindtap="toggleLight">
+      <view class="switch-track {{device.state === 'on' ? 'on' : ''}}">
+        <view class="switch-thumb"></view>
+      </view>
+      <view class="switch-label">{{device.state === 'on' ? '已开启' : '已关闭'}}</view>
+      <view class="switch-tip">点击{{device.state === 'on' ? '关闭' : '开启'}}设备</view>
+    </view>
+  </block>
+
+  <!-- 温湿度：双数据 -->
+  <block wx:elif="{{device.type === 'humiture'}}">
+    <view class="data-row">
+      <view class="data-cell t">
+        <view class="data-glow"></view>
+        <view class="data-num valueFloat">{{device.temp}}</view>
+        <view class="data-unit">°C 温度</view>
+      </view>
+      <view class="data-cell h">
+        <view class="data-glow"></view>
+        <view class="data-num valueFloat">{{device.hum}}</view>
+        <view class="data-unit">% 湿度</view>
+      </view>
+    </view>
+  </block>
+
+  <!-- 单值传感器：土壤 / CO2 / 光照 / 通用 -->
+  <block wx:else>
+    <view class="single">
+      <view class="single-glow single-glow-a"></view>
+      <view class="single-glow single-glow-b"></view>
+      <view class="single-num valueFloat">{{device.value}}</view>
+      <view class="single-unit" wx:if="{{device.unit}}">{{device.unit}}</view>
+    </view>
+  </block>
+
+  <!-- 趋势折线图（灯光开关类无数值，不展示） -->
+  <view class="chart-card" wx:if="{{chart.series.length}}">
+    <view class="chart-head">
+      <text class="chart-title">趋势</text>
+      <view class="chart-range">
+        <text class="range-btn {{chartRange === '1m' ? 'on' : ''}}" bindtap="setRange" data-range="1m">1分钟</text>
+        <text class="range-btn {{chartRange === '5m' ? 'on' : ''}}" bindtap="setRange" data-range="5m">5分钟</text>
+        <text class="range-btn {{chartRange === 'all' ? 'on' : ''}}" bindtap="setRange" data-range="all">全部</text>
+      </view>
+    </view>
+    <view class="chart-legend">
+      <view class="legend-item" wx:for="{{chart.series}}" wx:key="name">
+        <view class="legend-dot" style="background:{{item.color}}"></view>
+        <text class="legend-name">{{item.name}}</text>
+      </view>
+    </view>
+    <canvas
+      type="2d"
+      id="trendCanvas"
+      class="chart-canvas"
+      bindtouchstart="onChartTouch"
+      bindtouchmove="onChartTouch"
+      bindtouchend="onChartTouchEnd"
+    ></canvas>
+    <view class="chart-hint" wx:if="{{!chart.hasData}}">收到上报数据后将自动绘制趋势曲线</view>
+    <view class="chart-foot" wx:if="{{chart.hasData}}">轻触曲线查看各时刻数值</view>
+  </view>
+
+  <!-- 告警阈值配置 -->
+  <view class="alert-card" wx:if="{{device.thresholdFields.length}}">
+    <view class="ac-head">
+      <text class="ac-title">告警阈值</text>
+      <switch checked="{{device.thresholds.enabled}}" bindchange="onThresholdToggle" color="#07c160" />
+    </view>
+    <view class="ac-tip" wx:if="{{!device.thresholds.enabled}}">开启后，数据越限将通过微信（巴法云）推送通知</view>
+    <block wx:if="{{device.thresholds.enabled}}">
+      <view class="ac-row" wx:for="{{device.thresholdFields}}" wx:key="key">
+        <text class="ac-label">{{item.label}}</text>
+        <input
+          class="ac-input"
+          type="digit"
+          placeholder="不限"
+          value="{{device.thresholds[item.key]}}"
+          data-key="{{item.key}}"
+          bindinput="onThresholdInput"
+        />
+      </view>
+      <view class="ac-note">微信推送需：① 在巴法云控制台绑定微信（关注公众号「巴法云」）；② 小程序后台把 https://apis.bemfa.com 加入 request 合法域名</view>
+    </block>
+  </view>
+
+  <view class="meta">
+    <view class="meta-row">
+      <text class="meta-k">Topic</text>
+      <text class="meta-v" selectable="true">{{device.topic}}</text>
+    </view>
+    <view class="meta-row" wx:if="{{device.lastUpdateText}}">
+      <text class="meta-k">更新时间</text>
+      <text class="meta-v">{{device.lastUpdateText}}</text>
+    </view>
+  </view>
+</view>
+
+<view class="page {{themeClass}}" wx:else>
+  <view class="empty">设备不存在</view>
+</view>
